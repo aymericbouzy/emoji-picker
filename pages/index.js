@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
+import PickEmoji from './PickEmoji';
 
 export default function Home() {
   return (
@@ -15,7 +16,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <input type="text" placeholder="pick an emoji..." />
+        <PickEmoji />
       </main>
 
       <footer className={styles.footer}>
