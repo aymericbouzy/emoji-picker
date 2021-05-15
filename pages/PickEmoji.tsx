@@ -19,6 +19,10 @@ async function loadOptions(search: string) {
   }));
 }
 
+async function copyToClipBoard({ value: emoji }) {
+  await navigator.clipboard.writeText(emoji);
+}
+
 const PickEmoji = ({ className }) => {
   return (
     <Select
@@ -26,6 +30,7 @@ const PickEmoji = ({ className }) => {
       cacheOptions
       loadOptions={loadOptions}
       autoFocus
+      onChange={copyToClipBoard}
     />
   );
 };
