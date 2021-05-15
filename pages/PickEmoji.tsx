@@ -44,12 +44,14 @@ const PickEmoji = () => {
     <>
       <label
         className={styles.label}
-        id="aria-label"
-        htmlFor="aria-example-input"
+        id="emoji-picker-label"
+        htmlFor="emoji-picker"
       >
         Search emoji
       </label>
       <Select
+        inputId="emoji-picker"
+        aria-labelledby="emoji-picker-label"
         className={styles.picker}
         cacheOptions
         loadOptions={loadOptions}
