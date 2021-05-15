@@ -1,3 +1,10 @@
 .picker {
   width: 500px;
 }
+
+.label {
+  width: 100%;
+  font-size: 0.75rem;
+  font-weight: bold;
+  line-height: 2;
+}

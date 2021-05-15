@@ -41,14 +41,23 @@ async function copyToClipBoard({ value: emoji }) {
 
 const PickEmoji = () => {
   return (
-    <Select
-      className={styles.picker}
-      cacheOptions
-      loadOptions={loadOptions}
-      autoFocus
-      onChange={copyToClipBoard}
-      placeholder="Select emoji..."
-    />
+    <>
+      <label
+        className={styles.label}
+        id="aria-label"
+        htmlFor="aria-example-input"
+      >
+        Search emoji
+      </label>
+      <Select
+        className={styles.picker}
+        cacheOptions
+        loadOptions={loadOptions}
+        autoFocus
+        onChange={copyToClipBoard}
+        placeholder="Select emoji..."
+      />
+    </>
   );
 };
 
