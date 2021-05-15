@@ -23,7 +23,7 @@ async function copyToClipBoard({ value: emoji }) {
   await navigator.clipboard.writeText(emoji);
 }
 
-const PickEmoji = ({ className }) => {
+const PickEmoji = () => {
   return (
     <Select
       className={styles.picker}
