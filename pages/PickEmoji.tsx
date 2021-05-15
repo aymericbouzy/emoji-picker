@@ -47,6 +47,7 @@ const PickEmoji = () => {
       loadOptions={loadOptions}
       autoFocus
       onChange={copyToClipBoard}
+      placeholder="Select emoji..."
     />
   );
 };
