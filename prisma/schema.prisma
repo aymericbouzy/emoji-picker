@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Emoji {
+  character   String   @id @db.VarChar(255)
+  unicodeName String   @db.VarChar(255)
+  Search      Search[]
+}
+
+model Search {
+  query  String @db.VarChar(255)
+  choice String @db.VarChar(255)
+  count  Int    @default(0)
+  Emoji  Emoji  @relation(fields: [choice], references: [character])
+
+  @@id([query, choice])
+}
