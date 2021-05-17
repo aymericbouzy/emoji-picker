@@ -16,7 +16,7 @@ model Emoji {
 model Search {
   query  String @db.VarChar(255)
   choice String @db.VarChar(255)
-  count  Int    @default(0)
+  hits   Int    @default(0)
   Emoji  Emoji  @relation(fields: [choice], references: [character])
 
   @@id([query, choice])

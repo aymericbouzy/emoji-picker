@@ -1,13 +1,11 @@
-import { PrismaClient } from '@prisma/client';
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import prisma from './prisma-client';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const prisma = new PrismaClient();
-
   try {
     const {
       choice: { character, unicodeName },
-      queryStrings,
+      queries,
     } = req.body;
 
     await prisma.emoji.upsert({
@@ -24,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     await Promise.all(
-      queryStrings.map((query) =>
+      queries.map((query) =>
         prisma.search.upsert({
           where: {
             query_choice: {
@@ -35,10 +33,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           create: {
             query,
             choice: character,
-            count: 1,
+            hits: 1,
           },
           update: {
-            count: {
+            hits: {
               increment: 1,
             },
           },
@@ -46,11 +44,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ),
     );
 
-    res.status(200);
+    return res.status(200).json({ message: 'ok' });
   } catch (error) {
     console.error(error);
-    res.status(500);
-  } finally {
-    await prisma.$disconnect();
+    return res.status(500).json({ message: 'server error' });
   }
 }

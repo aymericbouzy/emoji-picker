@@ -1,9 +1,7 @@
-import { PrismaClient } from '.prisma/client';
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import prisma from './prisma-client';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const prisma = new PrismaClient();
-
   try {
     const query = req.query.query as string;
 
@@ -11,19 +9,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       where: {
         query,
       },
-      orderBy: {
-        count: 'desc',
-      },
+      orderBy: [
+        {
+          hits: 'desc',
+        },
+      ],
       include: {
         Emoji: true,
       },
     });
 
-    res.status(200).json(searches.map(({ Emoji }) => Emoji));
+    return res.status(200).json(searches.map(({ Emoji }) => Emoji));
   } catch (error) {
     console.error(error);
-    res.status(500);
-  } finally {
-    await prisma.$disconnect();
+    return res.status(500).json({ message: 'server error' });
   }
 }

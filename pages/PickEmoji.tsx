@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Select from 'react-select/async';
 import styles from '../styles/Picker.module.css';
 
@@ -20,26 +21,44 @@ async function loadOptions(search: string) {
     response.json(),
   );
 
-  console.log(
-    emojis
+  const suggestedEmojis: Emoji[] = await fetch(
+    `/api/search?${new URLSearchParams({ query: search })}`,
+  ).then((response) => response.json());
+
+  return [
+    ...suggestedEmojis,
+    ...(emojis || [])
       .filter(({ parent }) => !parent)
-      .filter(({ slug }) => !ignore.test(slug)),
-  );
-
-  return emojis
-    .filter(({ parent }) => !parent)
-    .filter(({ slug }) => !ignore.test(slug))
-    .map(({ character, unicodeName }) => ({
-      label: `${character} ${unicodeName}`,
-      value: character,
-    }));
-}
-
-async function copyToClipBoard({ value: emoji }) {
-  await navigator.clipboard.writeText(emoji);
+      .filter(({ slug }) => !ignore.test(slug))
+      .filter(
+        ({ character }) =>
+          !suggestedEmojis.some((emoji) => emoji.character === character),
+      ),
+  ].map(({ character, unicodeName }) => ({
+    label: `${character} ${unicodeName}`,
+    value: JSON.stringify({ character, unicodeName }),
+  }));
 }
 
 const PickEmoji = () => {
+  const [queries, setQueries] = useState([]);
+
+  async function onEmoji({ value: emoji }) {
+    const { character, unicodeName } = JSON.parse(emoji);
+    navigator.clipboard.writeText(character);
+    fetch('/api/remember-choice', {
+      method: 'POST',
+      body: JSON.stringify({
+        queries,
+        choice: { character, unicodeName },
+      }),
+      headers: {
+        'content-type': 'application/json',
+      },
+    });
+    setQueries([]);
+  }
+
   return (
     <>
       <label
@@ -54,10 +73,16 @@ const PickEmoji = () => {
         aria-labelledby="emoji-picker-label"
         className={styles.picker}
         cacheOptions
-        loadOptions={loadOptions}
+        loadOptions={(search: string) =>
+          loadOptions(search).catch((error) => {
+            console.error(error);
+            throw error;
+          })
+        }
         autoFocus
-        onChange={copyToClipBoard}
+        onChange={onEmoji}
         placeholder="Select emoji..."
+        onInputChange={(query) => setQueries((queries) => [...queries, query])}
       />
     </>
   );
